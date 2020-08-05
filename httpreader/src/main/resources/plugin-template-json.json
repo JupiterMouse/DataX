@@ -1,0 +1,78 @@
+{
+  "job": {
+    "setting": {
+      "speed": {
+        "channel": "3"
+      },
+      "errorLimit": {
+        "record": "0",
+        "percentage": "0"
+      }
+    },
+    "content": [
+      {
+        "reader": {
+          "name": "httpreader",
+          "parameter": {
+            "connect": {
+              "connectionRequestTimeout": -1,
+              "connectTimeout": -1,
+              "socketTimeout": -1
+            },
+            "url": "http://xxx:8080/xfrt/v1/0/rpt-fr-upload?page=0&size=10",
+            "headers": {
+              "Content-Type": "application/json;charset=utf-8",
+              "Authorization": "bearer 7841a7fe-da5c-46e8-8de7-224316f76ae2"
+            },
+            "auth": {
+              "type": "BASIC",
+              "username": "xxx",
+              "password": "xxx"
+            },
+            "format": "JSON",
+            "method": "GET",
+            "payload": "?page=0&size=10",
+            "mapPath": "content",
+            "column": [
+              "cptName",
+              "createdBy",
+              "creationDate"
+            ]
+          }
+        },
+        "writer": {
+          "name": "postgresqlwriter",
+          "parameter": {
+            "schema": "xxx",
+            "username": "xxx",
+            "password": "xxx",
+            "column": [
+              "zcode",
+              "zvalue",
+              "langu",
+              "zname",
+              "zpcod",
+              "zpval",
+              "zsort"
+            ],
+            "connection": [
+              {
+                "table": [
+                  "hr_ods.hr_sap_et_code"
+                ],
+                "jdbcUrl": "jdbc:postgresql://xxx:5432/hr"
+              }
+            ],
+            "preSql": [
+              "truncate table hr_ods.hr_sap_et_code;"
+            ],
+            "postSql": [
+              ""
+            ],
+            "batchSize": 1024
+          }
+        }
+      }
+    ]
+  }
+}

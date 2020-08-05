@@ -1,0 +1,13 @@
+{
+    "name": "httpreader",
+    "parameter": {
+        "url": "",
+        "headers": {},
+        "auth": {},
+        "format": "",
+        "method": "",
+        "payload": "",
+        "mapPath": "",
+        "column": []
+    }
+}
