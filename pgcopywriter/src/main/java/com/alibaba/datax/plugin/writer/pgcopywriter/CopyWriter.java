@@ -20,7 +20,11 @@ import com.alibaba.datax.plugin.rdbms.writer.Key;
  */
 public class CopyWriter extends Writer {
 
+<<<<<<< HEAD
     public static class Job extends Writer.Job {
+=======
+    public abstract static class Job extends Writer.Job {
+>>>>>>> save
         private Configuration originalConfig = null;
         private CommonRdbmsWriter.Job delegate = null;
 
@@ -59,7 +63,11 @@ public class CopyWriter extends Writer {
         }
     }
 
+<<<<<<< HEAD
     public static class Task extends Writer.Task {
+=======
+    public abstract static class Task extends Writer.Task {
+>>>>>>> save
         private Configuration writerSliceConfig;
         private CommonRdbmsWriter.Task delegate;
 
