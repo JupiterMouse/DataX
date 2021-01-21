@@ -1,0 +1,7 @@
+{
+    "name": "httpreader",
+    "class": "com.alibaba.datax.plugin.reader.httpreader.HttpReader",
+    "description": "useScene: test. mechanism: use datax framework to transport data from http. warn: The more you know about the data, the less problems you encounter.",
+    "developer": "JupiterMouse"
+}
+

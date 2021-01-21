@@ -1,0 +1,42 @@
+{
+  "name": "httpreader",
+  "parameter": {
+    "url": "http://xxx:8068/sap/bc/srt/rfc/sap/zhri_hrbi_per/800/zhri_hrbi_per_800/zhri_hrbi_per_800",
+    "headers": {
+      "Content-Type": "text/xml;charset=UTF-8｜application/json;charset=UTF-8",
+      "SOAPAction": "urn:sap-com:document:sap:rfc:functions:ZHRI_HRBI_PER:ZHRI_HRBI_PERRequest"
+    },
+    "auth": {
+      "type": "NONE|BASIC",
+      "username": "xxx",
+      "password": "xxx"
+    },
+    "format": "JSON|SOAP",
+    "method": "get|post",
+    "payload": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:sap-com:document:sap:rfc:functions\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <urn:ZHRI_HRBI_PER>\n         <ET_PERLIST>\n            <item>\n            \n            </item>\n         </ET_PERLIST>\n      </urn:ZHRI_HRBI_PER>\n   </soapenv:Body>\n</soapenv:Envelope>",
+    "mapPath": "soap-env:Envelope.soap-env:Body.n0:ZHRI_HRBI_PERResponse.ET_PERLIST.item",
+    "column": [
+      {
+        "name": "PERNR",
+        "type": "long"
+      },
+      {
+        "name": "ENAME",
+        "type": "string"
+      },
+      {
+        "name": "GESCH",
+        "type": "string"
+      },
+      {
+        "name": "ORGEH",
+        "type": "string"
+      },
+      {
+        "name": "ENDDATE",
+        "type": "date",
+        "format": "yyyy-MM-dd"
+      }
+    ]
+  }
+}
