@@ -1,10 +1,6 @@
 {
     "name": "pgcopywriter",
-<<<<<<< HEAD
     "class": "com.alibaba.datax.plugin.writer.pgcopywriter.CopyWriter",
-=======
-    "class": "com.alibaba.datax.plugin.writer.CopyWriter",
->>>>>>> save
-    "description": "postgrsql copy",
+    "description": "pgcopywriter copy",
     "developer": "alibaba"
 }

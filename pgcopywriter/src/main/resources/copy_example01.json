@@ -1,16 +1,61 @@
 {
-  "name": "pgcopywriter",
-  "parameter": {
-    "username": "",
-    "password": "",
-    "writeMode": "insert",
-    "column": [],
-    "session": [],
-    "preSql": [],
-    "connection": [
+  "job": {
+    "setting": {
+      "speed": {
+        "channel": 3
+      },
+      "errorLimit": {
+        "record": 0,
+        "percentage": 0
+      }
+    },
+    "content": [
       {
-        "jdbcUrl": "",
-        "table": []
+        "reader": {
+          "name": "mysqlreader",
+          "parameter": {
+            "username": "root",
+            "password": "root",
+            "column": [
+              "`id`",
+              "`name`",
+              "`age`",
+              "`birthday`"
+            ],
+            "splitPk": "id",
+            "connection": [
+              {
+                "table": [
+                  "datax_copy_test"
+                ],
+                "jdbcUrl": [
+                  "jdbc:mysql://127.0.0.1:3306/test?useCompression=true&fetchSize=10240"
+                ]
+              }
+            ]
+          }
+        },
+        "writer": {
+          "name": "pgcopywriter",
+          "parameter": {
+            "username": "gpadmin",
+            "password": "gpadmin",
+            "column": [
+              "id",
+              "name",
+              "age",
+              "birthday"
+            ],
+            "connection": [
+              {
+                "table": [
+                  "test.datax_copy"
+                ],
+                "jdbcUrl": "jdbc:postgresql://127.0.0.1:5432/test?currentSchema=test"
+              }
+            ]
+          }
+        }
       }
     ]
   }
