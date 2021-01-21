@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.concurrent.LinkedTransferQueue;
 
 import com.alibaba.datax.common.util.Configuration;
+import com.alibaba.datax.plugin.rdbms.writer.Key;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 import org.postgresql.core.BaseConnection;
@@ -24,7 +25,6 @@ public class CopyWorker extends Thread {
     private final String headerSql;
     private final LinkedTransferQueue<byte[]> dateQueue;
     private final Integer copySize;
-    private final static String COPY_SIZE = "copySize";
     private Exception exception = null;
 
     public CopyWorker(Configuration conf, CopyWriterTask task, BaseConnection conn, String headerSql,
@@ -34,8 +34,8 @@ public class CopyWorker extends Thread {
         this.headerSql = headerSql;
         this.dateQueue = dateQueue;
         this.setName(this.headerSql);
-        // 适度大，可以提升效率
-        this.copySize = conf.getInt(COPY_SIZE, 102400);
+        // 适度大，可以提升效率. 延用rdbms 数据库 batchSize 字段
+        this.copySize = conf.getInt(Key.BATCH_SIZE, 102400);
     }
 
     @Override

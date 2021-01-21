@@ -1,5 +1,8 @@
 ![Datax-logo](https://github.com/alibaba/DataX/blob/master/images/DataX-logo.jpg)
 
+# DataX
+
+* **增加写入插件[pgcopywriter](https://github.com/JupiterMouse/DataX/blob/master/pgcopywriter/doc/pgcopywriter.md)**
 
 # DataX
 
@@ -41,6 +44,7 @@ DataX目前已经有了比较全面的插件体系，主流的RDBMS数据库、N
 |              | Oracle     |     √     |     √     |[读](https://github.com/alibaba/DataX/blob/master/oraclereader/doc/oraclereader.md) 、[写](https://github.com/alibaba/DataX/blob/master/oraclewriter/doc/oraclewriter.md)|
 |              | SQLServer  |     √     |     √     |[读](https://github.com/alibaba/DataX/blob/master/sqlserverreader/doc/sqlserverreader.md) 、[写](https://github.com/alibaba/DataX/blob/master/sqlserverwriter/doc/sqlserverwriter.md)|
 |              | PostgreSQL |     √     |     √     |[读](https://github.com/alibaba/DataX/blob/master/postgresqlreader/doc/postgresqlreader.md) 、[写](https://github.com/alibaba/DataX/blob/master/postgresqlwriter/doc/postgresqlwriter.md)|
+| | **PostgreSQL 自定义copy方式** | X | Copywriter |[写](https://github.com/JupiterMouse/DataX/blob/4bc10a0fef1f1285f50011efa4c1bdd8f81f6fc8/pgcopywriter/doc/pgcopywriter.md)|
 |              | DRDS |     √     |     √     |[读](https://github.com/alibaba/DataX/blob/master/drdsreader/doc/drdsreader.md) 、[写](https://github.com/alibaba/DataX/blob/master/drdswriter/doc/drdswriter.md)|
 |              | 通用RDBMS(支持所有关系型数据库)         |     √     |     √     |[读](https://github.com/alibaba/DataX/blob/master/rdbmsreader/doc/rdbmsreader.md) 、[写](https://github.com/alibaba/DataX/blob/master/rdbmswriter/doc/rdbmswriter.md)|
 | 阿里云数仓数据存储    | ODPS       |     √     |     √     |[读](https://github.com/alibaba/DataX/blob/master/odpsreader/doc/odpsreader.md) 、[写](https://github.com/alibaba/DataX/blob/master/odpswriter/doc/odpswriter.md)|
@@ -61,94 +65,4 @@ DataX目前已经有了比较全面的插件体系，主流的RDBMS数据库、N
 |              | Elasticsearch       |         |     √     |[写](https://github.com/alibaba/DataX/blob/master/elasticsearchwriter/doc/elasticsearchwriter.md)|
 | 时间序列数据库 | OpenTSDB | √ |  |[读](https://github.com/alibaba/DataX/blob/master/opentsdbreader/doc/opentsdbreader.md)|
 |  | TSDB | √ | √ |[读](https://github.com/alibaba/DataX/blob/master/tsdbreader/doc/tsdbreader.md) 、[写](https://github.com/alibaba/DataX/blob/master/tsdbwriter/doc/tsdbhttpwriter.md)|
-
-# 阿里云DataWorks数据集成
-
-目前DataX的已有能力已经全部融和进阿里云的数据集成，并且比DataX更加高效、安全，同时数据集成具备DataX不具备的其它高级特性和功能。可以理解为数据集成是DataX的全面升级的商业化用版本，为企业可以提供稳定、可靠、安全的数据传输服务。与DataX相比，数据集成主要有以下几大突出特点：
-
-支持实时同步：
-
-- 功能简介：https://help.aliyun.com/document_detail/181912.html
-- 支持的数据源：https://help.aliyun.com/document_detail/146778.html
-- 支持数据处理：https://help.aliyun.com/document_detail/146777.html
-
-离线同步数据源种类大幅度扩充：
-
-- 新增比如：DB2、Kafka、Hologres、MetaQ、SAPHANA、达梦等等，持续扩充中
-- 离线同步支持的数据源：https://help.aliyun.com/document_detail/137670.html
-- 具备同步解决方案：
-    - 解决方案系统：https://help.aliyun.com/document_detail/171765.html
-    - 一键全增量：https://help.aliyun.com/document_detail/175676.html
-    - 整库迁移：https://help.aliyun.com/document_detail/137809.html
-    - 批量上云：https://help.aliyun.com/document_detail/146671.html
-    - 更新更多能力请访问：https://help.aliyun.com/document_detail/137663.html
-
-
-# 我要开发新的插件
-
-请点击：[DataX插件开发宝典](https://github.com/alibaba/DataX/blob/master/dataxPluginDev.md)
-
-
-# 项目成员
-
-核心Contributions: 言柏 、枕水、秋奇、青砾、一斅、云时
-
-感谢天烬、光戈、祁然、巴真、静行对DataX做出的贡献。
-
-# License
-
-This software is free to use under the Apache License [Apache license](https://github.com/alibaba/DataX/blob/master/license.txt).
-
-# 
-请及时提出issue给我们。请前往：[DataxIssue](https://github.com/alibaba/DataX/issues)
-
-# 开源版DataX企业用户
-
-![Datax-logo](https://github.com/alibaba/DataX/blob/master/images/datax-enterprise-users.jpg)
-
-```
-长期招聘 联系邮箱：datax@alibabacloud.com
-【JAVA开发职位】
-职位名称：JAVA资深开发工程师/专家/高级专家
-工作年限 : 2年以上
-学历要求 : 本科（如果能力靠谱，这些都不是条件）
-期望层级 : P6/P7/P8
-
-岗位描述：
-    1. 负责阿里云大数据平台（数加）的开发设计。 
-    2. 负责面向政企客户的大数据相关产品开发；
-    3. 利用大规模机器学习算法挖掘数据之间的联系，探索数据挖掘技术在实际场景中的产品应用 ；
-    4. 一站式大数据开发平台
-    5. 大数据任务调度引擎
-    6. 任务执行引擎
-    7. 任务监控告警
-    8. 海量异构数据同步
-
-岗位要求：
-    1. 拥有3年以上JAVA Web开发经验；
-    2. 熟悉Java的基础技术体系。包括JVM、类装载、线程、并发、IO资源管理、网络；
-    3. 熟练使用常用Java技术框架、对新技术框架有敏锐感知能力；深刻理解面向对象、设计原则、封装抽象；
-    4. 熟悉HTML/HTML5和JavaScript；熟悉SQL语言；
-    5. 执行力强，具有优秀的团队合作精神、敬业精神；
-    6. 深刻理解设计模式及应用场景者加分；
-    7. 具有较强的问题分析和处理能力、比较强的动手能力，对技术有强烈追求者优先考虑；
-    8. 对高并发、高稳定可用性、高性能、大数据处理有过实际项目及产品经验者优先考虑；
-    9. 有大数据产品、云产品、中间件技术解决方案者优先考虑。
-````
-钉钉用户群：
-
-- DataX开源用户交流群
-    - <img src="https://github.com/alibaba/DataX/blob/master/images/DataX%E5%BC%80%E6%BA%90%E7%94%A8%E6%88%B7%E4%BA%A4%E6%B5%81%E7%BE%A4.jpg" width="20%" height="20%">
-
-- DataX开源用户交流群2
-    - <img src="https://github.com/alibaba/DataX/blob/master/images/DataX%E5%BC%80%E6%BA%90%E7%94%A8%E6%88%B7%E4%BA%A4%E6%B5%81%E7%BE%A42.jpg" width="20%" height="20%">
-
-- DataX开源用户交流群3
-    - <img src="https://github.com/alibaba/DataX/blob/master/images/DataX%E5%BC%80%E6%BA%90%E7%94%A8%E6%88%B7%E4%BA%A4%E6%B5%81%E7%BE%A43.jpg" width="20%" height="20%">
-
-- DataX开源用户交流群4
-    - <img src="https://github.com/alibaba/DataX/blob/master/images/DataX%E5%BC%80%E6%BA%90%E7%94%A8%E6%88%B7%E4%BA%A4%E6%B5%81%E7%BE%A44.jpg" width="20%" height="20%">
-
-- DataX开源用户交流群5
-    - <img src="https://github.com/alibaba/DataX/blob/master/images/DataX%E5%BC%80%E6%BA%90%E7%94%A8%E6%88%B7%E4%BA%A4%E6%B5%81%E7%BE%A45.jpg" width="20%" height="20%">
-
+| |  |  |  ||

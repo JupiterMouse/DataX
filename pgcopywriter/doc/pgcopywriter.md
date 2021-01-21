@@ -6,96 +6,95 @@ ___
 
 ## 1 快速介绍
 
-PgCopyWriter插件实现了写入数据到 PostgreSQL主库目的表的功能。在底层实现上，PostgresqlWriter通过JDBC连接远程 PostgreSQL 数据库，并执行相应的 insert into ... sql 语句将数据写入 PostgreSQL，内部会分批次提交入库。
+PgCopyWriter插件实现了写入数据到 PostgreSQL(HAWQ、GreenPlumn)主库目的表的功能。在底层实现上，PostgresqlWriter通过JDBC连接远程 PostgreSQL 数据库，并执行相应的 Pg Copy from STDIN 语句将数据写入 PostgreSQL，内部会分批次提交入库。
 
-PostgresqlWriter面向ETL开发工程师，他们使用PostgresqlWriter从数仓导入数据到PostgreSQL。同时 PostgresqlWriter亦可以作为数据迁移工具为DBA等用户提供服务。
+PgCopyWriter面向ETL开发工程师，他们使用PgCopyWriter从数仓导入数据到PostgreSQL｜Greenplum。同时 PgCopyWriter亦可以作为数据迁移工具为DBA等用户提供服务。
 
 
 ## 2 实现原理
 
-PostgresqlWriter通过 DataX 框架获取 Reader 生成的协议数据，根据你配置生成相应的SQL插入语句
-
-
-* `insert into...`(当主键/唯一性索引冲突时会写不进去冲突的行)
-
-<br />
+PgCopyWriter通过 DataX 框架获取 Reader 生成的协议数据，根据你配置生成相应的Copy插入语句
 
     注意：
-    1. 目的表所在数据库必须是主库才能写入数据；整个任务至少需具备 insert into...的权限，是否需要其他权限，取决于你任务配置中在 preSql 和 postSql 中指定的语句。
+    1. 目的表所在数据库必须是主库才能写入数据；整个任务至少需具备 insert into...|copy的权限，是否需要其他权限，取决于你任务配置中在 preSql 和 postSql 中指定的语句。对于greenplum，同时可以指定session参数。
     2. PostgresqlWriter和MysqlWriter不同，不支持配置writeMode参数。
+    3. 注意，copy方式对表名、字段名有严格要求
 
+#### 转换架构
+
+![image-20210121224414322](pgcopywriter_struct.png)
 
 ## 3 功能说明
 
 ### 3.1 配置样例
 
-* 这里使用一份从内存产生到 PostgresqlWriter导入的数据。
+* 这里使用一份从mysql产生到 PostgresqlWriter导入的数据。
 
 ```json
 {
-    "job": {
-        "setting": {
-            "speed": {
-                "channel": 1
-            }
+  "job": {
+    "setting": {
+      "speed": {
+        "channel": 3
+      },
+      "errorLimit": {
+        "record": 0,
+        "percentage": 0
+      }
+    },
+    "content": [
+      {
+        "reader": {
+          "name": "mysqlreader",
+          "parameter": {
+            "username": "root",
+            "password": "root",
+            "column": [
+              "`id`",
+              "`name`",
+              "`age`",
+              "`birthday`"
+            ],
+            "splitPk": "id",
+            "connection": [
+              {
+                "table": [
+                  "datax_copy_test"
+                ],
+                "jdbcUrl": [
+                  "jdbc:mysql://127.0.0.1:3306/test?useCompression=true&fetchSize=10240"
+                ]
+              }
+            ]
+          }
         },
-        "content": [
-            {
-                 "reader": {
-                    "name": "streamreader",
-                    "parameter": {
-                        "column" : [
-                            {
-                                "value": "DataX",
-                                "type": "string"
-                            },
-                            {
-                                "value": 19880808,
-                                "type": "long"
-                            },
-                            {
-                                "value": "1988-08-08 08:08:08",
-                                "type": "date"
-                            },
-                            {
-                                "value": true,
-                                "type": "bool"
-                            },
-                            {
-                                "value": "test",
-                                "type": "bytes"
-                            }
-                        ],
-                        "sliceRecordCount": 1000
-                    }
-                },
-                "writer": {
-                    "name": "postgresqlwriter",
-                    "parameter": {
-                        "username": "xx",
-                        "password": "xx",
-                        "column": [
-                            "id",
-                            "name"
-                        ],
-                        "preSql": [
-                            "delete from test"
-                        ],
-                        "connection": [
-                            {
-                                "jdbcUrl": "jdbc:postgresql://127.0.0.1:3002/datax",
-                                "table": [
-                                    "test"
-                                ]
-                            }
-                        ]
-                    }
-                }
-            }
-        ]
-    }
+        "writer": {
+          "name": "pgcopywriter",
+          "parameter": {
+            "username": "gpadmin",
+            "password": "gpadmin",
+            "column": [
+              "id",
+              "name",
+              "age",
+              "birthday"
+            ],
+            "batchSize" : 102400,
+            "session": [],
+            "connection": [
+              {
+                "table": [
+                  "test.datax_copy"
+                ],
+                "jdbcUrl": "jdbc:postgresql://127.0.0.1:5432/test?currentSchema=test"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
 }
-
 ```
 
 
@@ -109,25 +108,25 @@ PostgresqlWriter通过 DataX 框架获取 Reader 生成的协议数据，根据�
       2、jdbcUrl按照PostgreSQL官方规范，并可以填写连接附加参数信息。具体请参看PostgreSQL官方文档或者咨询对应 DBA。
 
 
-  * 必选：是 <br />
+  * 必选：是 
 
-  * 默认值：无 <br />
+  * 默认值：无
 
 * **username**
 
-  * 描述：目的数据库的用户名 <br />
+  * 描述：目的数据库的用户名 
 
-  * 必选：是 <br />
+  * 必选：是 
 
-  * 默认值：无 <br />
+  * 默认值：无
 
 * **password**
 
-  * 描述：目的数据库的密码 <br />
+  * 描述：目的数据库的密码
 
-  * 必选：是 <br />
+  * 必选：是
 
-  * 默认值：无 <br />
+  * 默认值：无
 
 * **table**
 
@@ -135,9 +134,9 @@ PostgresqlWriter通过 DataX 框架获取 Reader 生成的协议数据，根据�
 
                注意：table 和 jdbcUrl 必须包含在 connection 配置单元中
 
-  * 必选：是 <br />
+  * 必选：是
 
-  * 默认值：无 <br />
+  * 默认值：无 
 
 * **column**
 
@@ -146,39 +145,45 @@ PostgresqlWriter通过 DataX 框架获取 Reader 生成的协议数据，根据�
                注意：1、我们强烈不推荐你这样配置，因为当你目的表字段个数、类型等有改动时，你的任务可能运行不正确或者失败
                     2、此处 column 不能配置任何常量值
 
-  * 必选：是 <br />
+  * 必选：是 
 
-  * 默认值：否 <br />
+  * 默认值：否
+
+
+* **session**
+  * 描述: DataX在获取postgresql连接时，执行session指定的SQL语句，修改当前connection session属性
+  * 必须: 否
+  * 默认值: 空
+
 
 * **preSql**
 
   * 描述：写入数据到目的表前，会先执行这里的标准语句。如果 Sql 中有你需要操作到的表名称，请使用 `@table` 表示，这样在实际执行 Sql 语句时，会对变量按照实际表名称进行替换。比如你的任务是要写入到目的端的100个同构分表(表名称为:datax_00,datax01, ... datax_98,datax_99)，并且你希望导入数据前，先对表中数据进行删除操作，那么你可以这样配置：`"preSql":["delete from @table"]`，效果是：在执行到每个表写入数据前，会先执行对应的 delete from 对应表名称 <br />
 
-  * 必选：否 <br />
+  * 必选：否 
 
-  * 默认值：无 <br />
+  * 默认值：无 
 
 * **postSql**
 
-  * 描述：写入数据到目的表后，会执行这里的标准语句。（原理同 preSql ） <br />
+  * 描述：写入数据到目的表后，会执行这里的标准语句。（原理同 preSql ）
 
-  * 必选：否 <br />
+  * 必选：否
 
-  * 默认值：无 <br />
+  * 默认值：无
 
 * **batchSize**
-
-	* 描述：一次性批量提交的记录数大小，该值可以极大减少DataX与PostgreSql的网络交互次数，并提升整体吞吐量。但是该值设置过大可能会造成DataX运行进程OOM情况。<br />
-
-	* 必选：否 <br />
-
-	* 默认值：1024 <br />
+* 描述：**一次copy提交的记录数大小**，该值可以极大减少DataX与PostgreSql的网络交互次数，并提升整体吞吐量。改值根据数据量可自行增大。
+	
+* 必选：否
+	
+* 默认值：**102400**
 
 ### 3.3 类型转换
 
-目前 PostgresqlWriter支持大部分 PostgreSQL类型，但也存在部分没有支持的情况，请注意检查你的类型。
+PgCopyWriter采用CSV的形式导入，但仍然需要指定类型，以对数据进行处理。
 
-下面列出 PostgresqlWriter针对 PostgreSQL类型转换列表:
+下面列出PgCopyWriter针对 PostgreSQL类型转换列表:
 
 | DataX 内部类型| PostgreSQL 数据类型    |
 | -------- | -----  |
@@ -193,60 +198,91 @@ PostgresqlWriter通过 DataX 框架获取 Reader 生成的协议数据，根据�
 
 ### 4.1 环境准备
 
+**mysql**
+
+```shell
+docker run -p 3306:3306 --name mysql \
+-v $PWD/conf:/etc/mysql \
+-v $PWD/logs:/var/log/mysql \
+-v $PWD/data:/var/lib/mysql \
+-e MYSQL_ROOT_PASSWORD=root \
+-d mysql:5.7
+```
+
+**greenplum**
+
+```shell
+docker run -itd -p 5432:5432 --name greenplum_6.11 projectairws/greenplum 
+# 默认密码 gpadmin/gpadmin
+```
+
 #### 4.1.1 数据特征
-建表语句：
 
- create table pref_test(
-     id serial,
-     a_bigint bigint,
-     a_bit bit(10),
-     a_boolean boolean,
-     a_char character(5),
-     a_date date,
-     a_double double precision,
-     a_integer integer,
-     a_money money,
-     a_num numeric(10,2),
-     a_real real,
-     a_smallint smallint,
-     a_text text,
-     a_time time,
-     a_timestamp timestamp
+##### Mysql建表语句
+
+```sql
+create table datax_copy_test
+(
+	id int auto_increment,
+	name varchar(64) null,
+	age int null,
+	birthday datetime default now() null,
+	constraint datax_copy_test_pk
+		primary key (id)
 )
+comment 'datax_copy_test';
 
-#### 4.1.2 机器参数
+drop table datax_copy_test;
 
-* 执行DataX的机器参数为:
-	1. cpu: 16核 Intel(R) Xeon(R) CPU E5620  @ 2.40GHz
-	2. mem: MemTotal: 24676836kB    MemFree: 6365080kB
-	3. net: 百兆双网卡
+# 插入数据
+insert into datax_copy_test(name, age) value("Albert Einstein1", 18);
+insert into datax_copy_test(name, age) value("Albert Einstein2", 19);
+insert into datax_copy_test(name, age) value("Albert Einstein3", 20);
+insert into datax_copy_test(name, age) value("Albert Einstein4", 21);
+insert into datax_copy_test(name, age) value("Albert Einstein5", 22);
+insert into datax_copy_test(name, age) value("Albert Einstein6", 18);
+insert into datax_copy_test(name, age) value("Albert Einstein7", 19);
+insert into datax_copy_test(name, age) value("Albert Einstein8", 20);
+insert into datax_copy_test(name, age) value("Albert Einstein9", 21);
+insert into datax_copy_test(name, age) value("Albert Einstein10", 22);
 
-* PostgreSQL数据库机器参数为:
-	D12 24逻辑核  192G内存 12*480G SSD 阵列
+# 反复新增
+insert into datax_copy_test(name, age)  select name,age from datax_copy_test;
+
+# 查询数据量
+select count(*) from datax_copy_test;
+```
+
+##### gp建表语句
+
+```sql
+create table test.datax_copy
+(
+    id       integer,
+    name     text,
+    age      integer,
+    birthday timestamp
+)distributed by (id);
+comment on table test.datax_copy is 'datax_copy';
+
+drop  table datax_copy;
+truncate table datax_copy;
+select count(1) from datax_copy;
+```
 
 
 ### 4.2 测试报告
 
 #### 4.2.1 单表测试报告
 
-| 通道数|  批量提交batchSize | DataX速度(Rec/s)| DataX流量(M/s) | DataX机器运行负载
-|--------|--------| --------|--------|--------|--------|
-|1| 128 | 9259 | 0.55 | 0.3
-|1| 512 | 10869 | 0.653 | 0.3
-|1| 2048 | 9803 | 0.589 | 0.8
-|4| 128 | 30303 | 1.82 | 1
-|4| 512 | 36363 | 2.18 | 1
-|4| 2048 | 36363 | 2.18 | 1
-|8| 128 | 57142 | 3.43 | 2
-|8| 512 | 66666 | 4.01 | 1.5
-|8| 2048 | 66666 | 4.01 | 1.1
-|16| 128 | 88888 | 5.34 | 1.8
-|16| 2048 | 94117 | 5.65 | 2.5
-|32| 512 | 76190 | 4.58 | 3
+![permance_pgcopywriter_01](permance_pgcopywriter_01.png)
 
 #### 4.2.2 性能测试小结
 1. `channel数对性能影响很大`
-2. `通常不建议写入数据库时，通道个数 > 32`
+
+2. `通常不建议写入数据库时，通道数指定2～3即可
+
+   
 
 
 ## FAQ
