@@ -1,5 +1,9 @@
 package com.alibaba.datax.plugin.writer.pgcopywriter;
 
+<<<<<<< HEAD
+=======
+import java.io.UnsupportedEncodingException;
+>>>>>>> v1
 import java.nio.charset.StandardCharsets;
 import java.sql.Types;
 import java.util.List;
@@ -46,7 +50,11 @@ public class CopyHelper {
 
 
     public static byte[] serializeRecord(Record record, int columnNumber, Triple<List<String>, List<Integer>,
+<<<<<<< HEAD
             List<String>> resultSetMetaData) {
+=======
+            List<String>> resultSetMetaData){
+>>>>>>> v1
         StringBuilder sb = new StringBuilder();
         Column column;
         for (int i = 0; i < columnNumber; i++) {
