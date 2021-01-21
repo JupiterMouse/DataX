@@ -1,0 +1,18 @@
+// 表名、字段名 大小写敏感。模式限制为insert模式
+{
+  "name": "pgcopywriter",
+  "parameter": {
+    "username": "",
+    "password": "",
+    "writeMode": "insert",
+    "column": [],
+    "session": [],
+    "preSql": [],
+    "connection": [
+      {
+        "jdbcUrl": "",
+        "table": []
+      }
+    ]
+  }
+}

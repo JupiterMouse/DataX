@@ -1,0 +1,17 @@
+{
+  "name": "pgcopywriter",
+  "parameter": {
+    "username": "",
+    "password": "",
+    "writeMode": "insert",
+    "column": [],
+    "session": [],
+    "preSql": [],
+    "connection": [
+      {
+        "jdbcUrl": "",
+        "table": []
+      }
+    ]
+  }
+}

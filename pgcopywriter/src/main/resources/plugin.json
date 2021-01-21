@@ -1,0 +1,6 @@
+{
+    "name": "pgcopywriter",
+    "class": "com.alibaba.datax.plugin.writer.pgcopywriter.CopyWriter",
+    "description": "postgrsql copy",
+    "developer": "alibaba"
+}
